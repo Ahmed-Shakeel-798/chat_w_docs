@@ -3,13 +3,25 @@ import json
 import os
 from openai import OpenAI
 
+from knowledge_base import additional_context
+
 logger = logging.getLogger(__name__)
 
 # Ollama/OpenAI client configuration
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://host.docker.internal:11434/v1")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "ollama")
 
-SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT", "You are a helpful assistant that responds conversationally to user messages.")
+SYSTEM_PROMPT = os.getenv(
+    "SYSTEM_PROMPT",
+    """
+        You represent Insurellm, the Insurance Tech company.
+        You are an expert in answering questions about Insurellm; its employees and its products.
+        You are provided with additional context that might be relevant to the user's question.
+        Give brief, accurate answers. If you don't know the answer, say so.
+
+        Relevant context:
+    """
+)
 
 def _get_client():
     return OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY)
@@ -61,6 +73,7 @@ def build_messages( query: str, conversation_history: list | None = None, system
     messages = []
 
     # 1) System prompt first
+    system_prompt += additional_context(query)
     messages.append({"role": "system", "content": system_prompt})
 
     # 2) Add trimmed history (latest N only)
