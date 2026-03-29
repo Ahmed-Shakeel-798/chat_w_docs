@@ -72,8 +72,13 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+    volumes:
+      - ./knowledge_base:/app/knowledge_base
     environment:
       PYTHONUNBUFFERED: 1
+
+      # Knowledge Base
+      KNOWLEDGE_BASE_PATH: /app/knowledge_base
 
       # Redis
       REDIS_HOST: redis

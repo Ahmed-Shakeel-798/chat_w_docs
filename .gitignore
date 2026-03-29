@@ -5,6 +5,8 @@
 .env.docker
 .env.example
 
+knowledge_base
+
 # Dependencies
 node_modules/
 dist-ssr/
